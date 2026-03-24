@@ -1,17 +1,37 @@
 # Bank Marketing Subscription Prediction
 
-Predicting whether a client will subscribe to a term deposit based on the UCI Bank Marketing dataset.
+Predict whether a client will subscribe to a **term deposit** based on direct marketing campaign data from a Portuguese bank.
 
-## Structure
+## Problem Statement
 
-```
-├── data/
-│   ├── bank-additional-full.csv   # Full dataset (41,188 rows, 20 features)
-│   └── bank-additional-names.txt  # Feature descriptions
-└── notebook/
-    └── eda.ipynb                  # Exploratory Data Analysis
-```
+Binary classification on the [UCI Bank Marketing Dataset](https://archive.ics.uci.edu/ml/datasets/Bank+Marketing) — 41,188 records, 20 features, target variable `y` (`yes` / `no`).
 
 ## Dataset
 
-[UCI Bank Marketing Dataset](https://archive.ics.uci.edu/ml/datasets/Bank+Marketing) — direct marketing campaigns (phone calls) of a Portuguese banking institution. Target variable: `y` (yes/no term deposit subscription).
+`data/bank-additional-full.csv` — Phone-call campaign data (May 2008 – Nov 2010).  
+Features include client demographics, last contact info, campaign history, and socio-economic indicators.
+
+## Approach
+
+- **EDA** — Distribution analysis, class imbalance check, feature correlations
+- **Preprocessing** — Encoding, scaling, train/test split
+- **Modeling** — Classification models with evaluation metrics (accuracy, F1, ROC-AUC)
+
+## Project Structure
+
+```
+├── data/                  # Dataset
+├── notebook/
+│   └── eda.ipynb          # Exploratory Data Analysis
+└── src/
+    ├── preprocessing.py   # Data cleaning & feature engineering
+    ├── model.py           # Model training & evaluation
+    └── utils.py           # Helper functions
+```
+
+## Run Locally
+
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn jupyter
+jupyter notebook notebook/eda.ipynb
+```
