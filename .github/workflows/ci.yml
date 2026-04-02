@@ -1,4 +1,4 @@
-name: CI — Bank Marketing API
+name: CI - Bank Marketing API
 
 on:
   push:
