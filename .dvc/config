@@ -1,4 +1,4 @@
 [core]
-    remote = gdrive
-['remote "gdrive"']
-    url = gdrive://1kfJPnHIM7a1n1jFQdSepv67y_KyR1kJe
+    remote = local_remote
+['remote "local_remote"']
+    url = D:\Bridgeon\dvc_storage\bank-marketing
