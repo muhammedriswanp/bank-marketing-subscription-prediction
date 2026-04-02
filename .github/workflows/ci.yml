@@ -1,4 +1,4 @@
-name: CI - Bank Marketing API
+name: CI Bank Marketing API
 
 on:
   push:
@@ -28,34 +28,13 @@ jobs:
           sleep 15
 
       - name: Test API health check
-        run: |
-          curl -f http://localhost:5000/health
+        run: curl -f http://localhost:5000/health
 
       - name: Test API prediction
         run: |
           curl -f -X POST http://localhost:5000/predict \
             -H "Content-Type: application/json" \
-            -d '{
-              "age": 35,
-              "job": "admin.",
-              "marital": "married",
-              "education": "university.degree",
-              "housing": "yes",
-              "loan": "no",
-              "contact": "cellular",
-              "month": "may",
-              "day_of_week": "mon",
-              "campaign": 2,
-              "previous": 1,
-              "poutcome": "nonexistent",
-              "emp.var.rate": -1.8,
-              "cons.price.idx": 92.893,
-              "cons.conf.idx": -46.2,
-              "euribor3m": 1.313,
-              "nr.employed": 5099.1,
-              "previous_contact": 0
-            }'
+            -d '{"age": 35, "job": "admin.", "marital": "married", "education": "university.degree", "housing": "yes", "loan": "no", "contact": "cellular", "month": "may", "day_of_week": "mon", "campaign": 2, "previous": 1, "poutcome": "nonexistent", "emp.var.rate": -1.8, "cons.price.idx": 92.893, "cons.conf.idx": -46.2, "euribor3m": 1.313, "nr.employed": 5099.1, "previous_contact": 0}'
 
       - name: Stop container
-        run: |
-          docker stop bank-api
+        run: docker stop bank-api
