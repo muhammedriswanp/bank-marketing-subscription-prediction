@@ -1,1 +1,8 @@
 /random_forest_tuned.pkl
+/random_forest.pkl
+/knn.pkl
+/decision_tree.pkl
+/gradient_boosting.pkl
+/gradient_boosting_tuned.pkl
+/adaboost.pkl
+/baseline__logistic_regression.pkl

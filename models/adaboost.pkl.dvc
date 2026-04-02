@@ -1,0 +1,5 @@
+outs:
+- md5: 049c390900f7cf15dbffee8d6d8ecdc3
+  size: 81961
+  hash: md5
+  path: adaboost.pkl
