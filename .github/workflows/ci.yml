@@ -1,0 +1,61 @@
+name: CI — Bank Marketing API
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -f Dockerfile.flask -t bank-marketing-api .
+
+      - name: Start Flask container
+        run: |
+          docker run -d \
+            -v ${{ github.workspace }}/models:/app/models \
+            -p 5000:5000 \
+            --name bank-api \
+            bank-marketing-api
+          sleep 15
+
+      - name: Test API health check
+        run: |
+          curl -f http://localhost:5000/health
+
+      - name: Test API prediction
+        run: |
+          curl -f -X POST http://localhost:5000/predict \
+            -H "Content-Type: application/json" \
+            -d '{
+              "age": 35,
+              "job": "admin.",
+              "marital": "married",
+              "education": "university.degree",
+              "housing": "yes",
+              "loan": "no",
+              "contact": "cellular",
+              "month": "may",
+              "day_of_week": "mon",
+              "campaign": 2,
+              "previous": 1,
+              "poutcome": "nonexistent",
+              "emp.var.rate": -1.8,
+              "cons.price.idx": 92.893,
+              "cons.conf.idx": -46.2,
+              "euribor3m": 1.313,
+              "nr.employed": 5099.1,
+              "previous_contact": 0
+            }'
+
+      - name: Stop container
+        run: |
+          docker stop bank-api
