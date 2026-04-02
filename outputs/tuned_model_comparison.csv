@@ -1,0 +1,3 @@
+Model,CV F1,F1,ROC-AUC
+Random Forest (Tuned),0.4861,0.5177,0.8062
+Gradient Boosting (Tuned),0.3751,0.3841,0.8067
