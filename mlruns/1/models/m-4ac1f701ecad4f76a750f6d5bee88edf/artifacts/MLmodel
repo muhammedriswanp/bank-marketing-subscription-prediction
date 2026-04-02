@@ -1,0 +1,23 @@
+artifact_path: file:D:/Bridgeon/Projects/bank-marketing-subscription-prediction/mlruns/1/models/m-4ac1f701ecad4f76a750f6d5bee88edf/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.14.0
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.10.1
+model_id: m-4ac1f701ecad4f76a750f6d5bee88edf
+model_size_bytes: 66455160
+model_uuid: m-4ac1f701ecad4f76a750f6d5bee88edf
+prompts: null
+run_id: 7b7346335a2f406cabfcf5c8f06c8875
+utc_time_created: '2026-04-02 11:20:31.274713'
