@@ -1,3 +1,6 @@
+# flask_api.py
+# Flask REST API for Bank Marketing Subscription Prediction
+
 from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
@@ -7,8 +10,9 @@ app = Flask(__name__)
 
 # ── Load pipeline ──────────────────────────────────────────────────────────────
 pipeline = joblib.load('models/random_forest_tuned.pkl')
+print(f"[INFO] Loaded model: {type(pipeline.named_steps['classifier']).__name__}")
 
-# ── Expected input fields ──────────────────────────────────────────────────────
+# ── Field definitions ──────────────────────────────────────────────────────────
 REQUIRED_FIELDS = [
     'age', 'job', 'marital', 'education', 'housing', 'loan',
     'contact', 'month', 'day_of_week', 'campaign', 'previous',
@@ -51,10 +55,39 @@ CATEGORICAL_FIELDS = {
 }
 
 
+# ── Input validation ───────────────────────────────────────────────────────────
+def validate_input(data):
+    # Level 1 — required fields
+    for field in REQUIRED_FIELDS:
+        if field not in data:
+            return f"Missing required field: '{field}'"
+
+    # Level 2 — type validation
+    for field in NUMERICAL_FIELDS:
+        if not isinstance(data[field], (int, float)):
+            return f"'{field}' must be a number, got {type(data[field]).__name__}"
+
+    # Level 3 — range validation
+    for field, (min_val, max_val) in FIELD_RANGES.items():
+        val = data[field]
+        if not (min_val <= val <= max_val):
+            return f"'{field}' must be between {min_val} and {max_val}, got {val}"
+
+    # Level 4 — categorical validation
+    for field, valid_values in CATEGORICAL_FIELDS.items():
+        if data[field] not in valid_values:
+            return f"'{field}' has invalid value '{data[field]}'. Valid: {valid_values}"
+
+    return None  # None means no error
+
+
 # ── Health check ───────────────────────────────────────────────────────────────
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'ok', 'model': 'Random Forest (Tuned)'}), 200
+    return jsonify({
+        'status': 'ok',
+        'model' : 'Random Forest (Tuned)'
+    }), 200
 
 
 # ── Predict endpoint ───────────────────────────────────────────────────────────
@@ -62,52 +95,26 @@ def health():
 def predict():
     data = request.get_json()
 
-    if not data:
-        return jsonify({'error': 'No JSON body received'}), 400
+    if data is None:
+        return jsonify({'error': 'Request body must be JSON'}), 400
 
-    # ── Level 1: key validation ────────────────────────────────────────────────
-    missing = [f for f in REQUIRED_FIELDS if f not in data]
-    if missing:
-        return jsonify({
-            'error'  : 'Missing required fields',
-            'missing': missing
-        }), 400
+    # run validation
+    error = validate_input(data)
+    if error:
+        return jsonify({'error': error}), 400
 
-    # ── Level 2: type validation ───────────────────────────────────────────────
-    for field in NUMERICAL_FIELDS:
-        if not isinstance(data[field], (int, float)):
-            return jsonify({
-                'error': f"'{field}' must be a number, got {type(data[field]).__name__}"
-            }), 400
-
-    # ── Level 3: range validation ──────────────────────────────────────────────
-    for field, (min_val, max_val) in FIELD_RANGES.items():
-        val = data[field]
-        if not (min_val <= val <= max_val):
-            return jsonify({
-                'error': f"'{field}' must be between {min_val} and {max_val}, got {val}"
-            }), 400
-
-    # ── Level 4: categorical validation ───────────────────────────────────────
-    for field, valid_values in CATEGORICAL_FIELDS.items():
-        if data[field] not in valid_values:
-            return jsonify({
-                'error'        : f"'{field}' has invalid value '{data[field]}'",
-                'valid_values' : valid_values
-            }), 400
-
-    # ── Predict ────────────────────────────────────────────────────────────────
+    # predict
     try:
-        input_df = pd.DataFrame([data])
-        prediction      = pipeline.predict(input_df)[0]
-        probability     = pipeline.predict_proba(input_df)[0]
+        input_df   = pd.DataFrame([data])
+        prediction = pipeline.predict(input_df)[0]
+        probability = pipeline.predict_proba(input_df)[0]
 
         return jsonify({
-            'prediction'        : int(prediction),
-            'outcome'           : 'Will Subscribe' if prediction == 1 else 'Will Not Subscribe',
-            'probability_yes'   : round(float(probability[1]), 4),
-            'probability_no'    : round(float(probability[0]), 4),
-            'model'             : 'Random Forest (Tuned)'
+            'prediction'     : int(prediction),
+            'outcome'        : 'Will Subscribe' if prediction == 1 else 'Will Not Subscribe',
+            'probability_yes': round(float(probability[1]), 4),
+            'probability_no' : round(float(probability[0]), 4),
+            'model'          : 'Random Forest (Tuned)'
         }), 200
 
     except Exception as e:
@@ -116,4 +123,4 @@ def predict():
 
 # ── Run ────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, use_reloader=False, port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)
