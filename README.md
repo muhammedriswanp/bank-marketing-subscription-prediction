@@ -1,8 +1,5 @@
 # Bank Marketing Subscription Prediction 🏦
 Predicts whether a bank client will subscribe to a term deposit.
-
-🚀 **Live App:** [Streamlit Dashboard](http://localhost:8501) · **API:** [Flask REST API](http://localhost:5000)
-
 ---
 
 ## Problem Statement
